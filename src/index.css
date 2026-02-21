@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@theme {
+  /* Palette – kept for charts and accents */
+  --color-turf: #2c6e49;
+  --color-sea: #4c956c;
+  --color-mint: #95d5b2;
+  --color-powder-blush: #ffc9b9;
+  --color-golden-apricot: #d68c45;
+  --color-forest: #1b4332;
+  --color-sage: #74c69d;
+  --color-coral: #e07a5f;
+  --color-slate: #3d5a80;
+  --color-violet: #6a4c93;
+  --color-amber: #f4a261;
+
+  /* Dark theme – sleek base */
+  --background: #0c0f12;
+  --foreground: #e6edf3;
+  --card: #151921;
+  --card-foreground: #e6edf3;
+  --popover: #151921;
+  --popover-foreground: #e6edf3;
+  --primary: #3fb950;
+  --primary-foreground: #0c0f12;
+  --secondary: #21262d;
+  --secondary-foreground: #e6edf3;
+  --muted: #21262d;
+  --muted-foreground: #8b949e;
+  --accent: #30363d;
+  --accent-foreground: #e6edf3;
+  --destructive: #f85149;
+  --destructive-foreground: #fff;
+  --border: #30363d;
+  --input: #30363d;
+  --ring: #3fb950;
+  --radius: 0.75rem;
+
+  /* Typography */
+  --font-display: "Outfit", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle background depth */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(63, 185, 80, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 50% at 100% 50%, rgba(61, 90, 128, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Staggered reveal animation */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Subtle scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* Date input dark styling */
+input[type="date"] {
+  color-scheme: dark;
+}
