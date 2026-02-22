@@ -10,4 +10,23 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  preview: {
+    // Allow any host (e.g. Render URL) so preview server doesn't block requests
+    allowedHosts: true,
+  },
+  build: {
+    sourcemap: false,
+    reportCompressedSize: false,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes("node_modules")) {
+            if (id.includes("chart.js") || id.includes("react-chartjs")) return "charts";
+            if (id.includes("react") || id.includes("react-dom")) return "react";
+            return "vendor";
+          }
+        },
+      },
+    },
+  },
 });
