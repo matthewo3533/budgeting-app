@@ -423,7 +423,7 @@ export function OneByOneCategorize({
             {current.amount >= 0 ? "+" : ""}${current.amount.toFixed(2)}
           </p>
           {groupSize > 1 && (
-            <div className="mt-4 rounded-lg border border-[var(--border)] bg-[var(--secondary)]/50 overflow-hidden">
+            <div className="mt-4 rounded-lg border border-[var(--border)] bg-[var(--secondary)]/50 overflow-hidden touch-pan-y">
               <label className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--muted-foreground)] cursor-pointer hover:bg-[var(--secondary)]/50">
                 <input
                   type="checkbox"
@@ -433,7 +433,7 @@ export function OneByOneCategorize({
                 />
                 <span className="font-medium">Apply to all {groupSize} similar</span>
               </label>
-              <div className="max-h-32 overflow-y-auto border-t border-[var(--border)]">
+              <div className="max-h-32 overflow-y-auto overflow-x-hidden border-t border-[var(--border)] touch-pan-y overscroll-contain">
                 {groupInQueue.map((tx) => (
                   <div
                     key={tx.id}
