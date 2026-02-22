@@ -21,8 +21,8 @@ export default defineConfig({
       output: {
         manualChunks: (id) => {
           if (id.includes("node_modules")) {
+            // Only split charts; keep React with vendor so there's no duplicate/order issue
             if (id.includes("chart.js") || id.includes("react-chartjs")) return "charts";
-            if (id.includes("react") || id.includes("react-dom")) return "react";
             return "vendor";
           }
         },
