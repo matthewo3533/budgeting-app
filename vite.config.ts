@@ -17,16 +17,5 @@ export default defineConfig({
   build: {
     sourcemap: false,
     reportCompressedSize: false,
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes("node_modules")) {
-            // Only split charts; keep React with vendor so there's no duplicate/order issue
-            if (id.includes("chart.js") || id.includes("react-chartjs")) return "charts";
-            return "vendor";
-          }
-        },
-      },
-    },
   },
 });
