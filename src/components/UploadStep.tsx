@@ -23,16 +23,16 @@ export function UploadStep() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-transparent relative z-10">
-      <div className="w-full max-w-md text-center space-y-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 bg-transparent relative z-10">
+      <div className="w-full max-w-md text-center space-y-6 sm:space-y-8">
         <div className="space-y-4 animate-fade-in-up">
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--primary)]/10 text-[var(--primary)] transition-transform duration-300 hover:scale-110 hover:bg-[var(--primary)]/15">
-            <FileSpreadsheet className="h-8 w-8" />
+          <div className="inline-flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-[var(--primary)]/10 text-[var(--primary)] transition-transform duration-300 hover:scale-110 hover:bg-[var(--primary)]/15">
+            <FileSpreadsheet className="h-7 w-7 sm:h-8 sm:w-8" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-[var(--foreground)] font-display">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--foreground)] font-display">
             Budget Tracker
           </h1>
-          <p className="text-sm text-[var(--muted-foreground)] max-w-sm mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-[var(--muted-foreground)] max-w-sm mx-auto leading-relaxed px-1">
             Upload your bank export CSV to analyse spending and see where your money goes.
           </p>
         </div>
@@ -47,9 +47,9 @@ export function UploadStep() {
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="group w-full relative overflow-hidden rounded-2xl border-2 border-dashed border-[var(--border)] bg-[var(--card)] p-12 transition-all duration-300 hover:border-[var(--primary)]/60 hover:bg-[var(--secondary)]/80 hover:scale-[1.02] hover:shadow-lg hover:shadow-[var(--primary)]/10 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 focus:ring-offset-[var(--background)]"
+          className="group w-full relative overflow-hidden rounded-2xl border-2 border-dashed border-[var(--border)] bg-[var(--card)] p-8 sm:p-12 min-h-[140px] transition-all duration-300 hover:border-[var(--primary)]/60 hover:bg-[var(--secondary)]/80 hover:scale-[1.02] hover:shadow-lg hover:shadow-[var(--primary)]/10 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2 focus:ring-offset-[var(--background)] touch-manipulation"
         >
-          <Upload className="mx-auto h-12 w-12 text-[var(--muted-foreground)] mb-4 transition-colors duration-200 group-hover:text-[var(--primary)]" />
+          <Upload className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-[var(--muted-foreground)] mb-3 sm:mb-4 transition-colors duration-200 group-hover:text-[var(--primary)]" />
           <span className="block text-sm font-semibold text-[var(--foreground)]">
             Choose CSV file
           </span>
@@ -61,7 +61,7 @@ export function UploadStep() {
         <div className="animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
           <Button
             variant="outline"
-            className="w-full"
+            className="w-full min-h-11"
             onClick={() => setTransactions(getDemoTransactions())}
           >
             <Play className="h-4 w-4 mr-2" />

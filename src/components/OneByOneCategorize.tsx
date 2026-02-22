@@ -5,13 +5,14 @@ import {
   type CategorizedTransaction,
 } from "@/types/transaction";
 import { getDisplayDescription, getMeaningfulDescription, getGroupKey } from "@/lib/csvParser";
-import { getRecommendedCategory } from "@/lib/categoryRecommendations";
+import { getRecommendedCategoryFromTransaction } from "@/lib/categoryRecommendations";
 import { getCategoryIcon } from "@/lib/categoryIcons";
 import anime from "animejs";
 import { Ban, ThumbsDown, ThumbsUp, Sparkles } from "lucide-react";
 
 const SWIPE_THRESHOLD = 80;
 const DRAG_ROTATION = 12;
+const SWIPE_POPUP_OPTIONS = 4;
 
 interface OneByOneCategorizeProps {
   queue: CategorizedTransaction[];
@@ -42,13 +43,14 @@ export function OneByOneCategorize({
   const cardRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const pillRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const swipeDropRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pointerStart = useRef({ x: 0, y: 0 });
   const lastPointer = useRef({ x: 0, y: 0 });
 
   const current = queue[index];
   const isIncome = current?.amount > 0;
   const recommendedId = current
-    ? getRecommendedCategory(getDisplayDescription(current), isIncome)
+    ? getRecommendedCategoryFromTransaction(current)
     : null;
   const categoryIds = isIncome ? incomeIds : expenseIds;
   const categoryIdsSorted = useMemo(() => {
@@ -56,6 +58,13 @@ export function OneByOneCategorize({
     const rest = categoryIds.filter((c) => c !== recommendedId);
     return [recommendedId, ...rest];
   }, [categoryIds, recommendedId]);
+  const swipeOptionIds = useMemo(() => {
+    if (recommendedId && categoryIds.includes(recommendedId)) {
+      const rest = categoryIds.filter((c) => c !== recommendedId);
+      return [recommendedId, ...rest.slice(0, SWIPE_POPUP_OPTIONS - 1)];
+    }
+    return categoryIds.slice(0, SWIPE_POPUP_OPTIONS);
+  }, [recommendedId, categoryIds]);
   const groupInQueue = current
     ? queue.slice(index).filter((t) => getGroupKey(t) === getGroupKey(current))
     : [];
@@ -150,12 +159,12 @@ export function OneByOneCategorize({
       const dy = (e.clientY - pointerStart.current.y) * 0.3;
       setDrag((d) => ({ ...d, x: dx, y: dy }));
       if (dx > SWIPE_THRESHOLD) {
-        const pills = pillRefs.current.filter(Boolean);
+        const refs = swipeDropRefs.current.filter(Boolean);
         let overIdx: number | null = null;
-        for (let i = 0; i < pills.length; i++) {
-          const pill = pills[i];
-          if (!pill) continue;
-          const r = pill.getBoundingClientRect();
+        for (let i = 0; i < refs.length; i++) {
+          const el = refs[i];
+          if (!el) continue;
+          const r = el.getBoundingClientRect();
           if (
             e.clientX >= r.left &&
             e.clientX <= r.right &&
@@ -186,15 +195,15 @@ export function OneByOneCategorize({
         setDrag({ x: 0, y: 0, isDragging: false });
       });
     } else if (x > SWIPE_THRESHOLD) {
-      const pills = pillRefs.current.filter(Boolean);
+      const refs = swipeDropRefs.current.filter(Boolean);
       const { x: px, y: py } = lastPointer.current;
       let assigned = false;
-      for (let i = 0; i < pills.length; i++) {
-        const pill = pills[i];
-        if (!pill) continue;
-        const r = pill.getBoundingClientRect();
+      for (let i = 0; i < refs.length; i++) {
+        const el = refs[i];
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
         if (px >= r.left && px <= r.right && py >= r.top && py <= r.bottom) {
-          const cat = categoryIdsSorted[i];
+          const cat = swipeOptionIds[i];
           if (cat) {
             setExitDirection("right");
             runExitAnimation("right", () => {
@@ -235,7 +244,7 @@ export function OneByOneCategorize({
         });
       }
     }
-  }, [drag.isDragging, drag.x, current, categoryIdsSorted, runExitAnimation, handleExclude, assignToCategory]);
+  }, [drag.isDragging, drag.x, current, swipeOptionIds, runExitAnimation, handleExclude, assignToCategory]);
 
   const handlePillClick = useCallback(
     (cat: CategoryId) => {
@@ -290,26 +299,79 @@ export function OneByOneCategorize({
   const rotation = drag.isDragging ? (drag.x * DRAG_ROTATION) / 200 : 0;
 
   return (
-    <div ref={containerRef} className="w-full max-w-lg mx-auto">
-      <div className="relative flex flex-col items-center min-h-[380px]">
+    <div ref={containerRef} className="w-full max-w-lg mx-auto px-2 sm:px-0">
+      <div className="relative flex flex-col items-center min-h-[340px] sm:min-h-[380px] z-50">
         {/* Swipe hints */}
         {drag.isDragging && (
           <>
             <div
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex items-center gap-2 rounded-xl border-2 border-[var(--destructive)]/60 bg-[var(--destructive)]/10 px-4 py-2 text-[var(--destructive)] transition-opacity duration-150"
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 flex items-center gap-2 rounded-xl border-2 border-[var(--destructive)]/60 bg-[var(--destructive)]/10 px-3 sm:px-4 py-2 text-[var(--destructive)] transition-opacity duration-150"
               style={{ opacity: drag.x < -50 ? 1 : 0.3 }}
             >
-              <ThumbsDown className="h-6 w-6" />
-              <span className="font-semibold">Exclude</span>
+              <ThumbsDown className="h-5 w-5 sm:h-6 sm:w-6 shrink-0" />
+              <span className="font-semibold text-sm sm:text-base">Exclude</span>
             </div>
             <div
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex items-center gap-2 rounded-xl border-2 border-[var(--primary)]/60 bg-[var(--primary)]/10 px-4 py-2 text-[var(--primary)] transition-opacity duration-150"
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 flex items-center gap-2 rounded-xl border-2 border-[var(--primary)]/60 bg-[var(--primary)]/10 px-3 sm:px-4 py-2 text-[var(--primary)] transition-opacity duration-150 max-w-[140px] sm:max-w-none"
               style={{ opacity: drag.x > SWIPE_THRESHOLD ? 1 : 0.3 }}
             >
-              <ThumbsUp className="h-6 w-6" />
-              <span className="font-semibold">Drag to a category</span>
+              <ThumbsUp className="h-5 w-5 sm:h-6 sm:w-6 shrink-0" />
+              <span className="font-semibold text-sm sm:text-base">Release on suggestion</span>
             </div>
           </>
+        )}
+
+        {/* Blur backdrop when "Release here" is shown – animated fade + blur */}
+        {drag.isDragging && (
+          <div
+            className="fixed inset-0 z-40 bg-black/25 pointer-events-none backdrop-blur-md transition-[opacity,backdrop-filter] duration-200 ease-out"
+            style={{
+              opacity: drag.x > SWIPE_THRESHOLD ? 1 : 0,
+              backdropFilter: drag.x > SWIPE_THRESHOLD ? "blur(8px)" : "blur(0px)",
+            }}
+            aria-hidden
+          />
+        )}
+
+        {/* Swipe-right pop-up: recommendations appear when dragged right; release onto one to assign */}
+        {drag.isDragging && drag.x > SWIPE_THRESHOLD && (
+          <div
+            className="release-panel-in absolute right-0 top-full sm:top-1/2 sm:-translate-y-1/2 z-50 flex flex-col gap-2 mt-2 sm:mt-0 left-0 sm:left-[100%] sm:ml-3 min-w-0 w-full sm:w-auto sm:min-w-[180px]"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
+              Release here
+            </p>
+            {swipeOptionIds.map((cat, i) => {
+              const isSuggested = cat === recommendedId;
+              const isTarget = dropTargetIndex === i;
+              const Icon = getCategoryIcon(cat);
+              return (
+                <div
+                  key={cat}
+                  ref={(el) => { swipeDropRefs.current[i] = el; }}
+                  className={`flex cursor-default items-center gap-3 rounded-xl border-2 px-3 sm:px-4 py-3 min-h-12 sm:min-h-0 transition-all duration-150 touch-manipulation ${
+                    isTarget
+                      ? "scale-105 border-[var(--primary)] bg-[var(--primary)]/25 shadow-lg shadow-[var(--primary)]/20"
+                      : "border-[var(--border)] bg-[var(--card)]"
+                  }`}
+                  style={{
+                    borderLeftWidth: "5px",
+                    borderLeftColor: getCategoryColor(cat),
+                  }}
+                >
+                  <Icon className={`h-5 w-5 shrink-0 ${isSuggested ? "text-[var(--primary)]" : "opacity-80"}`} />
+                  <div className="min-w-0 flex-1">
+                    {isSuggested && (
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--primary)]">Suggested</span>
+                    )}
+                    <p className={`truncate text-sm font-medium ${isTarget ? "text-[var(--primary)]" : "text-[var(--foreground)]"}`}>
+                      {getCategoryLabel(cat)}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
 
         {/* Card stack: next card peek */}
@@ -335,9 +397,9 @@ export function OneByOneCategorize({
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
           onPointerCancel={handlePointerUp}
-          className="relative w-full max-w-md rounded-2xl border-2 border-[var(--border)] bg-[var(--card)] p-6 shadow-xl cursor-grab active:cursor-grabbing touch-none select-none"
+          className="relative w-full max-w-md rounded-2xl border-2 border-[var(--border)] bg-[var(--card)] p-4 sm:p-6 shadow-xl cursor-grab active:cursor-grabbing touch-none select-none"
           style={{
-            zIndex: 1,
+            zIndex: 45,
             transform: `translate(${drag.x}px, ${drag.y}px) rotate(${rotation}deg)`,
             transition: drag.isDragging ? "none" : "transform 0.25s ease-out",
           }}
@@ -396,8 +458,8 @@ export function OneByOneCategorize({
       </div>
 
       {/* Category pills: drag target or tap. Recommended first, much larger and highlighted. */}
-      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mt-6 mb-2 text-center">
-        Swipe left to exclude · Swipe right and drop on a category
+      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] mt-4 sm:mt-6 mb-2 text-center px-1">
+        Swipe left to exclude · Swipe right for suggestions
       </p>
       <div className="flex flex-col items-stretch gap-3">
         {recommendedId && categoryIdsSorted[0] === recommendedId && (
@@ -410,7 +472,7 @@ export function OneByOneCategorize({
               ref={(el) => { pillRefs.current[0] = el; }}
               type="button"
               onClick={() => handlePillClick(recommendedId)}
-              className={`w-full rounded-2xl border-2 px-6 py-4 text-base font-semibold transition-all duration-200 flex items-center justify-center gap-3 ${
+              className={`w-full rounded-2xl border-2 px-4 sm:px-6 py-4 min-h-12 text-base font-semibold transition-all duration-200 flex items-center justify-center gap-3 touch-manipulation ${
                 drag.isDragging && dropTargetIndex === 0
                   ? "border-[var(--primary)] bg-[var(--primary)]/25 scale-[1.02] shadow-xl shadow-[var(--primary)]/25"
                   : "border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] hover:bg-[var(--primary)]/25 hover:shadow-lg hover:shadow-[var(--primary)]/10"
@@ -442,7 +504,7 @@ export function OneByOneCategorize({
                 ref={(el) => { pillRefs.current[i] = el; }}
                 type="button"
                 onClick={() => handlePillClick(cat)}
-                className={`rounded-xl border-2 px-4 py-2.5 text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                className={`rounded-xl border-2 px-4 py-3 sm:py-2.5 text-sm font-medium min-h-11 touch-manipulation transition-all duration-200 flex items-center gap-2 ${
                   isDropTarget
                     ? "border-[var(--primary)] bg-[var(--primary)]/20 scale-110 shadow-lg shadow-[var(--primary)]/20"
                     : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)]/50 hover:scale-105 hover:shadow-md"
@@ -464,7 +526,7 @@ export function OneByOneCategorize({
       <button
         type="button"
         onClick={handleExcludeClick}
-        className="flex items-center justify-center gap-2 w-full mt-4 rounded-xl border-2 border-dashed border-[var(--border)] bg-transparent px-4 py-3 text-sm font-medium text-[var(--muted-foreground)] transition-all duration-200 hover:border-[var(--destructive)]/50 hover:text-[var(--destructive)] hover:bg-[var(--destructive)]/10"
+        className="flex items-center justify-center gap-2 w-full mt-4 rounded-xl border-2 border-dashed border-[var(--border)] bg-transparent px-4 py-3 min-h-12 text-sm font-medium text-[var(--muted-foreground)] transition-all duration-200 hover:border-[var(--destructive)]/50 hover:text-[var(--destructive)] hover:bg-[var(--destructive)]/10 touch-manipulation"
       >
         <Ban className="h-4 w-4" />
         Don&apos;t include

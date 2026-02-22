@@ -116,52 +116,56 @@ export function CategorizeStep() {
   const totalUncategorized = uncategorizedIncome.length + uncategorizedExpenses.length;
 
   return (
-    <div className="min-h-screen p-5 pb-24 bg-transparent relative z-10">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <header className="flex flex-wrap items-center justify-between gap-4 animate-fade-in-up">
+    <div className="min-h-screen p-3 sm:p-5 pb-24 bg-transparent relative z-10 overflow-x-hidden">
+      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 min-w-0">
+        <header className="flex flex-col gap-4 animate-fade-in-up">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-[var(--foreground)] font-display">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--foreground)] font-display">
               Categorise transactions
             </h1>
-            <p className="text-sm text-[var(--muted-foreground)] mt-1 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[var(--muted-foreground)] mt-1 leading-relaxed">
               One at a time — click a category to assign. Similar transactions are grouped by merchant.
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="relative w-48 sm:w-56">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
+            <div className="relative w-full sm:w-48 md:w-56 min-w-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
               <Input
                 placeholder="Filter..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 h-9 bg-[var(--card)] border-[var(--border)]"
+                className="pl-9 h-10 sm:h-9 bg-[var(--card)] border-[var(--border)] w-full"
               />
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setViewMode(viewMode === "onebyone" ? "grid" : "onebyone")}
-            >
-              {viewMode === "onebyone" ? <LayoutGrid className="h-4 w-4" /> : null}
-              {viewMode === "onebyone" ? " Grid" : " One by one"}
-            </Button>
-            <ManageCategoriesDialog />
-            <Button onClick={() => setStep("dashboard")}>
-              Dashboard
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                if (typeof window !== "undefined" && window.confirm("Clear all data and start over? This cannot be undone.")) {
-                  reset();
-                }
-              }}
-              className="text-[var(--muted-foreground)] border-[var(--border)]"
-            >
-              <RotateCcw className="h-4 w-4 mr-1" />
-              Reset
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-10 flex-1 sm:flex-none"
+                onClick={() => setViewMode(viewMode === "onebyone" ? "grid" : "onebyone")}
+              >
+                {viewMode === "onebyone" ? <LayoutGrid className="h-4 w-4 sm:mr-1" /> : null}
+                <span className="hidden sm:inline">{viewMode === "onebyone" ? " Grid" : " One by one"}</span>
+                <span className="sm:hidden">{viewMode === "onebyone" ? "Grid" : "List"}</span>
+              </Button>
+              <ManageCategoriesDialog />
+              <Button className="min-h-10 flex-1 sm:flex-none" onClick={() => setStep("dashboard")}>
+                Dashboard
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-10 text-[var(--muted-foreground)] border-[var(--border)]"
+                onClick={() => {
+                  if (typeof window !== "undefined" && window.confirm("Clear all data and start over? This cannot be undone.")) {
+                    reset();
+                  }
+                }}
+              >
+                <RotateCcw className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">Reset</span>
+              </Button>
+            </div>
           </div>
         </header>
 
@@ -207,7 +211,7 @@ export function CategorizeStep() {
                 />
               </>
             )}
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8 overflow-hidden">
               <h2 className="text-sm font-semibold text-[var(--foreground)] mb-3 font-display">
                 All transactions
               </h2>

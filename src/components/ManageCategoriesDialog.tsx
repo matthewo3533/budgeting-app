@@ -32,7 +32,7 @@ export function ManageCategoriesDialog() {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60" />
         <Dialog.Content
-          className="fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-xl outline-none"
+          className="fixed left-[50%] top-[50%] z-50 w-[calc(100%-2rem)] max-w-md max-h-[90vh] overflow-y-auto translate-x-[-50%] translate-y-[-50%] rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-6 shadow-xl outline-none"
           onPointerDownOutside={() => setOpen(false)}
           onEscapeKeyDown={() => setOpen(false)}
         >

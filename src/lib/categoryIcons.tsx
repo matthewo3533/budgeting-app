@@ -23,6 +23,8 @@ import {
   Building2,
   CircleDollarSign,
   Tag,
+  Receipt,
+  CreditCard,
 } from "lucide-react";
 import type { CategoryId } from "@/types/transaction";
 
@@ -37,8 +39,10 @@ const EXPENSE_ICONS: Partial<Record<string, LucideIcon>> = {
   healthcare: Heart,
   insurance: Shield,
   loans: Landmark,
+  buy_now_pay_later: CreditCard,
   shopping: ShoppingBag,
   leisure: Gamepad2,
+  self_employment_costs: Receipt,
   gifts_donations: Gift,
   education: GraduationCap,
   personal_care: Sparkles,

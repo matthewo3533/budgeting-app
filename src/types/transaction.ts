@@ -29,8 +29,10 @@ export type BuiltInExpenseId =
   | "healthcare"
   | "insurance"
   | "loans"
+  | "buy_now_pay_later"
   | "shopping"
   | "leisure"
+  | "self_employment_costs"
   | "gifts_donations"
   | "education"
   | "personal_care"
@@ -67,8 +69,10 @@ export const EXPENSE_CATEGORY_IDS: BuiltInExpenseId[] = [
   "healthcare",
   "insurance",
   "loans",
+  "buy_now_pay_later",
   "shopping",
   "leisure",
+  "self_employment_costs",
   "gifts_donations",
   "education",
   "personal_care",
@@ -97,8 +101,10 @@ export const CATEGORY_LABELS: Record<string, string> = {
   healthcare: "Healthcare",
   insurance: "Insurance",
   loans: "Loans & debt",
+  buy_now_pay_later: "Buy now pay later",
   shopping: "Shopping",
   leisure: "Leisure & entertainment",
+  self_employment_costs: "Self employment costs",
   gifts_donations: "Gifts & donations",
   education: "Education",
   personal_care: "Personal care",

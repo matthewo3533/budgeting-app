@@ -47,7 +47,7 @@ export function GroupSimilarPopover({
         </Button>
       </Popover.Trigger>
       <Popover.Content
-        className="w-80 rounded-xl border border-[var(--border)] bg-[var(--popover)] p-4 shadow-xl shadow-black/30 outline-none"
+        className="w-[calc(100vw-2rem)] max-w-80 rounded-xl border border-[var(--border)] bg-[var(--popover)] p-4 shadow-xl shadow-black/30 outline-none"
         align="start"
       >
         <p className="text-sm font-medium mb-2">Assign all matching transactions</p>

@@ -150,3 +150,23 @@ export function getGroupKeyFromDescription(description: string): string {
     .replace(/\s/g, "");
   return normalized.slice(0, 10) || "other";
 }
+
+/**
+ * Build a single searchable string from all reference-related fields for recommendation matching.
+ * Includes: description, reference, particulars, code, otherPartyName, otherPartyParticulars,
+ * otherPartyCode, otherPartyReference, transactionCode. Used by the recommendation engine.
+ */
+export function getSearchableTransactionText(tx: BankTransaction): string {
+  const parts = [
+    tx.description ?? "",
+    tx.reference ?? "",
+    tx.particulars ?? "",
+    tx.code ?? "",
+    tx.transactionCode ?? "",
+    tx.otherPartyName ?? "",
+    tx.otherPartyParticulars ?? "",
+    tx.otherPartyCode ?? "",
+    tx.otherPartyReference ?? "",
+  ].filter(Boolean);
+  return parts.join(" ").replace(/\s+/g, " ").trim();
+}
