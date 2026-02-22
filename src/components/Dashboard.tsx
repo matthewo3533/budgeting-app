@@ -265,17 +265,17 @@ export function Dashboard() {
           displayColors: true,
           boxPadding: 6,
           // Show categories in order: largest to smallest
-          itemSort: (a: { raw: unknown }, b: { raw: unknown }) =>
+          itemSort: (a: { raw?: unknown }, b: { raw?: unknown }) =>
             (Number(b.raw) || 0) - (Number(a.raw) || 0),
           callbacks: {
-            title: (items: { dataIndex: number; label: string }[]) => {
-              if (items.length === 0) return "";
-              return `Week of ${items[0].label}`;
+            title: (items: Array<{ label?: string }>) => {
+              if (!items.length) return "";
+              return `Week of ${items[0].label ?? ""}`;
             },
-            label: (ctx: { raw: unknown; dataset: { label: string } }) =>
-              ` ${ctx.dataset.label}: $${(Number(ctx.raw) || 0).toFixed(2)}`,
-            afterBody: (items: { raw: unknown }[]) => {
-              const total = items.reduce((s, i) => s + (Number(i.raw) || 0), 0);
+            label: (ctx: { raw?: unknown; dataset?: { label?: string } }) =>
+              ` ${ctx.dataset?.label ?? ""}: $${(Number(ctx.raw) || 0).toFixed(2)}`,
+            afterBody: (items: Array<{ raw?: unknown }>) => {
+              const total = items.reduce((s: number, i: { raw?: unknown }) => s + (Number(i.raw) || 0), 0);
               if (total <= 0) return [];
               return ["", `Total: $${total.toFixed(2)}`];
             },
